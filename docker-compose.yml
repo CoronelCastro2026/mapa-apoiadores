@@ -1,0 +1,14 @@
+services:
+  mapa:
+    build: .
+    container_name: mapa-apoiadores
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - SENHA=${SENHA}
+      - SECRET=${SECRET}
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
+      - N8N_KEY=${N8N_KEY}
+    volumes:
+      - ./data:/app/data

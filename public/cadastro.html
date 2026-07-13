@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de Apoio</title>
+<style>
+  :root{--bg:#0C2340;--panel:#11315A;--line:#1E4A7A;--ink:#EAF2FB;--muted:#8FB0D4}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Segoe UI',system-ui,Arial,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+  .box{background:#0F2A4E;border:1px solid var(--line);border-radius:16px;padding:26px;width:100%;max-width:420px}
+  .eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:20px;font-weight:800;margin:4px 0 2px}
+  .quem{font-size:13px;color:var(--muted);margin-bottom:16px}
+  .quem b{color:var(--ink)}
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 5px}
+  input,select{width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:15px}
+  input::placeholder{color:var(--muted)}
+  button{width:100%;margin-top:18px;padding:13px;border-radius:10px;border:none;background:#FFC53D;color:#12233B;font-weight:800;font-size:15px;cursor:pointer}
+  button:disabled{opacity:.6}
+  #erro{color:#FF8A8A;font-size:12.5px;min-height:16px;margin-top:8px}
+  #ok{display:none;text-align:center;padding:14px 0}
+  #ok .check{font-size:44px}
+  #ok h2{font-size:18px;margin:8px 0 6px}
+  #ok p{font-size:13.5px;color:var(--muted);line-height:1.55}
+  .lgpd{font-size:10.5px;color:var(--muted);margin-top:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="box">
+  <div id="formArea">
+    <div class="eyebrow">Cadastro de apoio</div>
+    <h1>Junte-se à campanha</h1>
+    <div class="quem" id="quem">Carregando convite...</div>
+    <label>Nome completo</label>
+    <input id="nome" placeholder="Seu nome completo" maxlength="120">
+    <label>WhatsApp (com DDD)</label>
+    <input id="zap" placeholder="(18) 99999-9999" inputmode="tel" maxlength="30">
+    <label>Município</label>
+    <input id="mun" list="munList" placeholder="Digite seu município">
+    <datalist id="munList"></datalist>
+    <div id="grauBox" style="display:none">
+      <label>Função</label>
+      <select id="grau">
+        <option value="Apoiador" selected>Apoiador</option>
+        <option value="Cabo Eleitoral">Cabo Eleitoral</option>
+      </select>
+    </div>
+    <button id="enviar">Confirmar meu apoio</button>
+    <div id="erro"></div>
+    <div class="lgpd">Seus dados serão usados exclusivamente para contato da campanha, conforme a LGPD. Você receberá uma mensagem no WhatsApp para completar seu cadastro.</div>
+  </div>
+  <div id="ok">
+    <div class="check">✅</div>
+    <h2>Cadastro confirmado!</h2>
+    <p>Obrigado por apoiar. Em breve você receberá uma mensagem no seu WhatsApp para completar seus dados.</p>
+  </div>
+</div>
+<script>
+const codigo=location.pathname.split('/').pop();
+let MUNS=[];
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+
+async function init(){
+  try{
+    const r=await fetch('/api/convite/'+codigo);
+    if(!r.ok)throw 0;
+    const c=await r.json();
+    document.getElementById('quem').innerHTML='Você foi convidado(a) por <b>'+c.nome+'</b>.';
+    if(c.grau==='Coordenador')document.getElementById('grauBox').style.display='block';
+  }catch(e){
+    document.getElementById('formArea').innerHTML='<h1>Link inválido</h1><p style="color:var(--muted);font-size:13px;margin-top:8px">Peça um novo link de cadastro para quem te convidou.</p>';
+    return;
+  }
+  MUNS=await (await fetch('/municipios.json')).json();
+  document.getElementById('munList').innerHTML=MUNS.map(m=>'<option value="'+m.n+'">').join('');
+}
+init();
+
+document.getElementById('enviar').onclick=async()=>{
+  const erro=document.getElementById('erro');
+  erro.textContent='';
+  const nome=document.getElementById('nome').value.trim();
+  const zap=document.getElementById('zap').value.trim();
+  const munNome=document.getElementById('mun').value.trim();
+  const m=MUNS.find(x=>norm(x.n)===norm(munNome));
+  if(!nome){erro.textContent='Informe seu nome completo.';return;}
+  if(!zap||zap.replace(/\D/g,'').length<10){erro.textContent='Informe um WhatsApp válido com DDD.';return;}
+  if(!m){erro.textContent='Escolha um município da lista.';return;}
+  const btn=document.getElementById('enviar');
+  btn.disabled=true;btn.textContent='Enviando...';
+  try{
+    const r=await fetch('/api/cadastro',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({codigo,nome,zap,munId:m.id,grau:document.getElementById('grau')?document.getElementById('grau').value:'Apoiador'})});
+    if(!r.ok)throw await r.json();
+    document.getElementById('formArea').style.display='none';
+    document.getElementById('ok').style.display='block';
+  }catch(e){
+    erro.textContent=(e&&e.erro)||'Falha ao enviar — tente novamente.';
+    btn.disabled=false;btn.textContent='Confirmar meu apoio';
+  }
+};
+</script>
+</body>
+</html>
