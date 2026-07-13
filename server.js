@@ -33,6 +33,8 @@ db.exec(`
     num INTEGER,                   -- número do coordenador
     votos INTEGER DEFAULT 0,
     zap TEXT, endereco TEXT, email TEXT,
+    apelido TEXT, profissao TEXT, aniversario TEXT,
+    completo INTEGER DEFAULT 0,   -- 1 = já completou os dados pelo WhatsApp
     dob_id TEXT, obs TEXT,
     mun_id TEXT NOT NULL,          -- código IBGE
     pai_id TEXT,                   -- quem cadastrou (hierarquia)
@@ -42,6 +44,10 @@ db.exec(`
     pessoa_id TEXT NOT NULL, mun_id TEXT NOT NULL, PRIMARY KEY(pessoa_id, mun_id)
   );
 `);
+// migração: adiciona colunas novas em bancos antigos
+for (const col of ['apelido TEXT', 'profissao TEXT', 'aniversario TEXT', 'completo INTEGER DEFAULT 0']) {
+  try { db.exec('ALTER TABLE pessoas ADD COLUMN ' + col); } catch (e) { /* já existe */ }
+}
 
 // ---------- util ----------
 const rid = p => p + crypto.randomBytes(6).toString('hex');
@@ -53,6 +59,8 @@ function pessoaOut(p) {
   return {
     id: p.id, nome: p.nome, grau: p.grau, num: p.num || undefined,
     votos: p.votos || 0, zap: p.zap || '', endereco: p.endereco || '', email: p.email || '',
+    apelido: p.apelido || '', profissao: p.profissao || '', aniversario: p.aniversario || '',
+    completo: !!p.completo,
     dobId: p.dob_id || null, obs: p.obs || '', munId: p.mun_id,
     paiId: p.pai_id || null, codigo: p.codigo || null,
     muns: db.prepare('SELECT mun_id FROM pessoa_muns WHERE pessoa_id=?').all(p.id).map(r => r.mun_id)
@@ -62,9 +70,10 @@ function inserirPessoa(x) {
   const id = x.id || rid('p');
   const precisaCodigo = (x.grau === 'Coordenador' || x.grau === 'Cabo Eleitoral');
   const num = x.grau === 'Coordenador' ? (x.num || proxNum()) : null;
-  db.prepare(`INSERT INTO pessoas(id,nome,grau,num,votos,zap,endereco,email,dob_id,obs,mun_id,pai_id,codigo)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+  db.prepare(`INSERT INTO pessoas(id,nome,grau,num,votos,zap,endereco,email,apelido,profissao,aniversario,completo,dob_id,obs,mun_id,pai_id,codigo)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
     .run(id, x.nome, x.grau, num, +x.votos || 0, x.zap || '', x.endereco || '', x.email || '',
+         x.apelido || '', x.profissao || '', x.aniversario || '', x.completo ? 1 : 0,
          x.dobId || null, x.obs || '', String(x.munId), x.paiId || null,
          x.codigo || (precisaCodigo ? novoCodigo() : null));
   const setM = db.prepare('INSERT OR IGNORE INTO pessoa_muns(pessoa_id,mun_id) VALUES (?,?)');
@@ -309,6 +318,19 @@ app.post('/api/whats/cadastro', n8nAuth, (req, res) => {
   res.json({ ok: true, pessoa: { id: p.id, nome: p.nome, grau: p.grau, municipio: mun.n },
              cadastradoPor: pai.nome });
 });
+// o fluxo 2 (agradecimento) precisa saber quem é o dono do número que respondeu
+app.get('/api/whats/pessoa', n8nAuth, (req, res) => {
+  const alvo = variantesZap(req.query.zap);
+  const p = db.prepare("SELECT * FROM pessoas WHERE zap IS NOT NULL AND zap != ''").all()
+    .find(x => { const v = variantesZap(x.zap); return [...alvo].some(a => a && v.has(a)); });
+  if (!p) return res.status(404).json({ erro: 'nao_encontrado' });
+  const o = pessoaOut(p);
+  const pai = p.pai_id ? db.prepare('SELECT nome FROM pessoas WHERE id=?').get(p.pai_id) : null;
+  res.json({ ...o, municipio: MUN_NOME[p.mun_id] || '', cadastradoPor: pai ? pai.nome : null,
+             faltando: ['nome','apelido','email','profissao','endereco','aniversario']
+               .filter(c => !o[c] || (c === 'nome' && !String(o.nome).trim().includes(' '))) });
+});
+
 // ---------- atualização pelo n8n (WhatsApp devolve os dados) ----------
 app.patch('/api/pessoas/:id', (req, res) => {
   const admin = tokenValido((req.headers.authorization || '').replace('Bearer ', ''));
@@ -317,8 +339,11 @@ app.patch('/api/pessoas/:id', (req, res) => {
   const p = db.prepare('SELECT * FROM pessoas WHERE id=?').get(req.params.id);
   if (!p) return res.status(404).json({ erro: 'não encontrado' });
   const x = req.body || {};
-  db.prepare('UPDATE pessoas SET nome=?, zap=?, endereco=?, email=?, votos=?, obs=? WHERE id=?')
+  db.prepare(`UPDATE pessoas SET nome=?, zap=?, endereco=?, email=?, apelido=?, profissao=?,
+              aniversario=?, completo=?, votos=?, obs=? WHERE id=?`)
     .run(x.nome ?? p.nome, x.zap ?? p.zap, x.endereco ?? p.endereco, x.email ?? p.email,
+         x.apelido ?? p.apelido, x.profissao ?? p.profissao, x.aniversario ?? p.aniversario,
+         x.completo !== undefined ? (x.completo ? 1 : 0) : p.completo,
          x.votos !== undefined ? +x.votos || 0 : p.votos, x.obs ?? p.obs, p.id);
   backup();
   res.json(pessoaOut(db.prepare('SELECT * FROM pessoas WHERE id=?').get(p.id)));

@@ -238,6 +238,15 @@
           <input id="fZap" placeholder="WhatsApp">
           <select id="fDob"><option value="">— sem dobrada —</option></select>
         </div>
+        <div class="frow">
+          <input id="fApelido" placeholder="Apelido">
+          <input id="fProf" placeholder="Profissão">
+        </div>
+        <div class="frow">
+          <input id="fEmail" placeholder="E-mail">
+          <input id="fNasc" placeholder="Aniversário (dd/mm)" maxlength="10" style="max-width:140px">
+        </div>
+        <div class="frow"><input id="fEnd" placeholder="Endereço"></div>
         <div class="frow"><input id="fObs" placeholder="Observações"></div>
         <div class="fbtns">
           <button class="savebtn" id="saveBtn">Salvar</button>
@@ -532,7 +541,7 @@ function renderPanel(){
     return `<div class="card">
       <div class="top"><span class="nm">${p.grau==='Coordenador'&&p.num?'<span class="numtag">'+p.num+'</span>':''}${p.nome}</span>
       <span class="badge b-${p.grau.replace(' ','')}">${p.grau}</span></div>
-      <div class="meta"><b>${fmt(+p.votos||0)}</b> votos potenciais${p.zap?' · '+p.zap:''}${p.endereco?'<br>'+p.endereco:''}${munsTxt}${p.obs?'<br>'+p.obs:''}</div>
+      <div class="meta"><b>${fmt(+p.votos||0)}</b> votos potenciais${p.zap?' · '+p.zap:''}${p.apelido?' · "'+p.apelido+'"':''}${p.profissao?'<br>'+p.profissao:''}${p.email?'<br>'+p.email:''}${p.endereco?'<br>'+p.endereco:''}${p.aniversario?'<br>🎂 '+p.aniversario:''}${munsTxt}${p.obs?'<br>'+p.obs:''}${!p.completo&&p.zap?'<br><span style="color:#FFC53D">⏳ aguardando completar dados pelo WhatsApp</span>':''}</div>
       ${d?`<span class="dobtag" style="background:${d.cor}"><b>${d.ini}</b> ${d.nome}</span>`:''}
       <div class="acts">
         ${p.grau==='Coordenador'?`<button onclick="verCoord('${p.id}')">ver territórios</button>`:''}
@@ -579,7 +588,8 @@ function openForm(){
 function closeForm(){
   form.classList.remove('open'); editId=null; extraMuns=[];
   formTitle.textContent='Novo cadastro';
-  fNome.value=fVotos.value=fZap.value=fObs.value=''; fGrau.value='Apoiador'; fDob.value='';
+  fNome.value=fVotos.value=fZap.value=fObs.value=fApelido.value=fProf.value=fEmail.value=fNasc.value=fEnd.value='';
+  fGrau.value='Apoiador'; fDob.value='';
   renderChips(); syncCoordBox();
 }
 function syncCoordBox(){ coordbox.classList.toggle('on',fGrau.value==='Coordenador'); }
@@ -611,6 +621,8 @@ saveBtn.onclick=async()=>{
   const nome=fNome.value.trim();
   if(!nome){toast('Informe o nome');return;}
   const payload={nome,grau:fGrau.value,votos:+fVotos.value||0,zap:fZap.value.trim(),
+    apelido:fApelido.value.trim(),profissao:fProf.value.trim(),email:fEmail.value.trim(),
+    aniversario:fNasc.value.trim(),endereco:fEnd.value.trim(),
     dobId:fDob.value||null,obs:fObs.value.trim(),munId:selId,
     muns:fGrau.value==='Coordenador'?[...extraMuns]:[]};
   try{
@@ -632,6 +644,8 @@ window.editP=pid=>{
   editId=p.id; fillDobSelect();
   formTitle.textContent='Editar cadastro';
   fNome.value=p.nome; fGrau.value=p.grau; fVotos.value=p.votos||''; fZap.value=p.zap||'';
+  fApelido.value=p.apelido||''; fProf.value=p.profissao||''; fEmail.value=p.email||'';
+  fNasc.value=p.aniversario||''; fEnd.value=p.endereco||'';
   fDob.value=p.dobId||''; fObs.value=p.obs||'';
   extraMuns=[...(p.muns||[])]; renderChips(); syncCoordBox();
   form.classList.add('open'); fNome.focus();
@@ -720,7 +734,8 @@ function renderEq(){
   const nC=db.pessoas.filter(p=>p.grau==='Coordenador').length;
   const nE=db.pessoas.filter(p=>p.grau==='Cabo Eleitoral').length;
   const nA=db.pessoas.filter(p=>p.grau==='Apoiador').length;
-  eqTotais.innerHTML=`<b>${nC}</b> coord · <b>${nE}</b> cabos · <b>${nA}</b> apoiadores`;
+  const pend=db.pessoas.filter(p=>!p.completo&&p.zap).length;
+  eqTotais.innerHTML=`<b>${nC}</b> coord · <b>${nE}</b> cabos · <b>${nA}</b> apoiadores${pend?` · <span style="color:#FFC53D"><b>${pend}</b> aguardando dados</span>`:''}`;
   const totalDe=p=>{
     const f=filhos[p.id]||[];
     return f.length+f.reduce((s,x)=>s+totalDe(x),0);
@@ -789,11 +804,11 @@ document.addEventListener('click',e=>{ if(!sug.contains(e.target)&&e.target!==q)
 /* ---------- CSV ---------- */
 csvBtn.onclick=()=>{
   if(!db.pessoas.length){toast('Nada cadastrado ainda');return;}
-  let rows=[['Municipio','Nome','Grau','Num Coordenador','Potencial de Votos','WhatsApp','Endereco','Email','Dobrada','Iniciais','Municipios que cuida','Cadastrado por','Observacoes']];
+  let rows=[['Municipio','Nome','Apelido','Grau','Num Coordenador','Potencial de Votos','WhatsApp','Email','Profissao','Endereco','Aniversario','Dobrada','Iniciais','Municipios que cuida','Cadastrado por','Dados completos','Observacoes']];
   db.pessoas.forEach(p=>{
     const d=p.dobId?dobOf(p.dobId):null;
     const pai=p.paiId?db.pessoas.find(x=>x.id===p.paiId):null;
-    rows.push([munById[p.munId],p.nome,p.grau,p.num||'',p.votos||0,p.zap||'',p.endereco||'',p.email||'',d?d.nome:'',d?d.ini:'',(p.muns||[]).map(m=>munById[m]).join(' | '),pai?pai.nome:'',p.obs||'']);
+    rows.push([munById[p.munId],p.nome,p.apelido||'',p.grau,p.num||'',p.votos||0,p.zap||'',p.email||'',p.profissao||'',p.endereco||'',p.aniversario||'',d?d.nome:'',d?d.ini:'',(p.muns||[]).map(m=>munById[m]).join(' | '),pai?pai.nome:'',p.completo?'sim':'nao',p.obs||'']);
   });
   const csv='\uFEFF'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n');
   const a=document.createElement('a');
