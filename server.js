@@ -293,7 +293,9 @@ app.get('/api/whats/indicador', n8nAuth, (req, res) => {
 
 // o agente coletou os dados (por áudio ou texto) e manda gravar
 app.post('/api/whats/cadastro', n8nAuth, (req, res) => {
-  const { zapIndicador, nome, zap, municipio, grau } = req.body || {};
+  const b = req.body || {};
+  const zapIndicador = b.zapIndicador || req.query.zapIndicador;
+  const { nome, zap, municipio, grau } = b;
   const pai = acharPorZap(zapIndicador);
   if (!pai) return res.status(404).json({ erro: 'indicador_nao_encontrado',
     msg: 'Este número de WhatsApp não pertence a um coordenador ou cabo eleitoral cadastrado.' });
