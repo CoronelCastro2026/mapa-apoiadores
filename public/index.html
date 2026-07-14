@@ -95,6 +95,12 @@
   .card .nm{font-weight:700;font-size:14px;flex:1}
   .badge{font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:99px;color:#12233B;flex:none}
   .b-Coordenador{background:#FFC53D}.b-CaboEleitoral{background:#FF8A3D}.b-Apoiador{background:#8FCFFF}
+  .placar{display:flex;gap:14px;margin-top:6px;padding:6px 9px;background:var(--panel2);border-radius:7px}
+  .placar .pl{display:flex;flex-direction:column}
+  .placar .pl span{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .placar .pl b{font-size:15px;font-variant-numeric:tabular-nums}
+  .bar{height:4px;background:var(--panel2);border-radius:99px;margin-top:5px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:99px}
   .card .meta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.55}
   .card .meta b{color:var(--ink)}
   .dobtag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;color:#12233B;margin-top:5px}
@@ -152,6 +158,61 @@
   .eqhead{display:flex;align-items:center;gap:8px;padding:0 16px 8px}
   .eqhead button{margin-left:auto;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px 10px;font-size:11.5px;cursor:pointer}
 
+  /* ===== EQUIPE EM TELA CHEIA ===== */
+  #eqFull{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
+  #eqFull.on{display:flex}
+  .eqTop{display:flex;align-items:center;gap:18px;padding:14px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .eqTop .eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+  .eqTop h1{font-size:20px;font-weight:800}
+  .eqTop .close{margin-left:auto;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:9px 15px;font-weight:700;font-size:13px;cursor:pointer}
+  .eqTop .close:hover{background:var(--line)}
+  .eqStats{display:flex;gap:10px;flex-wrap:wrap}
+  .eqStats .s{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 13px;min-width:96px}
+  .eqStats .s b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
+  .eqStats .s span{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .eqBody{flex:1;overflow:auto;padding:20px 24px}
+
+  /* grade de coordenadores */
+  .coordGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+  .coordCard{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 16px;cursor:pointer;transition:border-color .12s}
+  .coordCard:hover{border-color:var(--coordC)}
+  .coordCard .ch{display:flex;align-items:center;gap:9px;margin-bottom:3px}
+  .coordCard .cnome{font-weight:800;font-size:16px;flex:1}
+  .coordCard .cmun{font-size:12px;color:var(--muted)}
+  .coordCard .cnums{display:flex;gap:16px;margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}
+  .coordCard .cn{display:flex;flex-direction:column}
+  .coordCard .cn span{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .coordCard .cn b{font-size:16px;font-variant-numeric:tabular-nums}
+  .coordCard .abrir{margin-top:10px;font-size:11.5px;color:var(--muted);text-align:right}
+
+  /* detalhe do coordenador */
+  .eqBack{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0;margin-bottom:12px;text-decoration:underline}
+  .eqBack:hover{color:var(--ink)}
+  .detHead{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px 18px;margin-bottom:16px}
+  .detHead .dnome{font-size:20px;font-weight:800}
+  .detHead .dsub{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .detHead .dacts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .detHead .dacts button{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 13px;font-size:12px;font-weight:700;cursor:pointer}
+  .detHead .dacts button:hover{background:var(--line)}
+  .detHead .dacts .verde{background:var(--hl);color:#06281A;border:none}
+
+  .grupo{margin-bottom:18px}
+  .grupo .gt{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .grupo .gt b{color:var(--ink)}
+  .caboBlock{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+  .caboBlock .cbh{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .caboBlock .cbn{font-weight:700;font-size:14.5px}
+  .caboBlock .cbnums{margin-left:auto;display:flex;gap:14px;font-size:12px;color:var(--muted)}
+  .caboBlock .cbnums b{color:var(--ink)}
+  .tabela{width:100%;border-collapse:collapse;margin-top:9px;font-size:12.5px}
+  .tabela th{text-align:left;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:5px 8px;border-bottom:1px solid var(--line);font-weight:700}
+  .tabela td{padding:6px 8px;border-bottom:1px solid rgba(30,74,122,.4)}
+  .tabela tr:last-child td{border-bottom:none}
+  .tabela .vt{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+  .tabela .pend{color:#FFC53D;font-size:11px}
+  .tabela tr:hover{background:rgba(30,74,122,.25)}
+  .vazio{color:var(--muted);font-style:italic;font-size:12.5px;padding:8px}
+
   @media(max-width:860px){
     body{overflow:auto;height:auto}
     main{flex-direction:column}
@@ -169,9 +230,11 @@
   </div>
   <div class="stats">
     <div class="stat"><b id="stApoio">0</b><span>Cadastrados</span></div>
-    <div class="stat"><b id="stVotos">0</b><span>Potencial de votos</span></div>
+    <div class="stat"><b id="stMeta">0</b><span>Meta total</span></div>
+    <div class="stat"><b id="stVotos">0</b><span>Votos realizados</span></div>
     <div class="stat"><b id="stMun">0</b><span>Municípios</span></div>
     <div class="stat"><b id="stDob">0</b><span>Dobradas</span></div>
+    <button id="btnEquipe" style="background:#FFC53D;color:#12233B;border:none;border-radius:10px;padding:10px 16px;font-weight:800;font-size:13px;cursor:pointer">👥 Equipe</button>
   </div>
 </header>
 <main>
@@ -206,7 +269,6 @@
     <div class="tabs">
       <button id="tabMun" class="on">Município</button>
       <button id="tabDob">Dobradas</button>
-      <button id="tabEq">Equipe</button>
     </div>
 
     <!-- VIEW MUNICÍPIO -->
@@ -226,7 +288,10 @@
             <option>Cabo Eleitoral</option>
             <option selected>Apoiador</option>
           </select>
-          <input id="fVotos" type="number" min="0" placeholder="Potencial de votos">
+          <input id="fVotos" type="number" min="0" placeholder="Votos que traz">
+        </div>
+        <div class="frow" id="metaRow" style="display:none">
+          <input id="fMeta" type="number" min="0" placeholder="META de votos (o que prometeu entregar)">
         </div>
         <div class="coordbox" id="coordbox">
           <label>Municípios que este coordenador cuida (além do município atual):</label>
@@ -285,18 +350,19 @@
       </div>
     </div>
 
-    <!-- VIEW EQUIPE (hierarquia) -->
-    <div class="view" id="viewEq">
-      <div class="paneltitle">
-        <div class="eyebrow">Equipe</div>
-        <h2>Quem cadastrou quem</h2>
-        <div class="sub">Coordenadores e cabos têm um link de cadastro próprio. Tudo que entra pelo link deles aparece aqui embaixo deles.</div>
-      </div>
-      <div class="eqhead"><span class="cnt" id="eqTotais"></span><button id="eqRefresh">↻ Atualizar</button></div>
-      <div class="list tree" id="eqList"><div class="empty">Ninguém cadastrado ainda.</div></div>
-    </div>
   </aside>
 </main>
+<div id="eqFull">
+  <div class="eqTop">
+    <div>
+      <div class="eyebrow">Campanha · Estrutura</div>
+      <h1 id="eqTitulo">Equipe</h1>
+    </div>
+    <div class="eqStats" id="eqStats"></div>
+    <button class="close" id="eqClose">✕ Voltar ao mapa</button>
+  </div>
+  <div class="eqBody" id="eqBody"></div>
+</div>
 <div id="tooltip"></div>
 <div id="login">
   <div class="loginbox">
@@ -353,6 +419,15 @@ const dobOf=id=>db.dobradas.find(d=>d.id===id);
 const pessoasDe=munId=>db.pessoas.filter(p=>p.munId===munId);
 const votosDe=munId=>pessoasDe(munId).reduce((s,p)=>s+(+p.votos||0),0);
 const fmt=n=>n.toLocaleString('pt-BR');
+// realizado = voto próprio + tudo que a rede abaixo dele trouxe
+function realizadoDe(pid){
+  const p=db.pessoas.find(x=>String(x.id)===String(pid));
+  if(!p)return 0;
+  let t=+p.votos||0;
+  db.pessoas.filter(x=>x.paiId===p.id).forEach(f=>{ t+=realizadoDe(f.id); });
+  return t;
+}
+const pct=(r,m)=>m>0?Math.round(r/m*100):null;
 
 /* ---------- render mapa ---------- */
 function renderMap(){
@@ -410,9 +485,11 @@ function renderLegDob(){
 }
 function stats(){
   const n=db.pessoas.length;
-  const v=db.pessoas.reduce((s,p)=>s+(+p.votos||0),0);
+  const v=db.pessoas.reduce((s,p)=>s+(+p.votos||0),0);          // realizado = soma de todos os votos próprios
+  const meta=db.pessoas.filter(p=>!p.paiId&&p.grau!=='Apoiador') // meta = só dos coordenadores raiz (evita dupla contagem)
+    .reduce((s,p)=>s+(+p.meta||0),0);
   const m=new Set(db.pessoas.map(p=>p.munId)).size;
-  stApoio.textContent=n; stVotos.textContent=fmt(v);
+  stApoio.textContent=n; stVotos.textContent=fmt(v); stMeta.textContent=fmt(meta);
   stMun.textContent=m+' / 645'; stDob.textContent=db.dobradas.length;
 }
 
@@ -469,7 +546,7 @@ async function load(silencioso){
   }
   renderMap();
   if(selId)renderPanel();
-  if(viewEq.classList.contains('on'))renderEq();
+  renderEq();
   if(viewDob.classList.contains('on'))renderDobList();
 }
 pwBtn.onclick=async()=>{
@@ -541,7 +618,12 @@ function renderPanel(){
     return `<div class="card">
       <div class="top"><span class="nm">${p.grau==='Coordenador'&&p.num?'<span class="numtag">'+p.num+'</span>':''}${p.nome}</span>
       <span class="badge b-${p.grau.replace(' ','')}">${p.grau}</span></div>
-      <div class="meta"><b>${fmt(+p.votos||0)}</b> votos potenciais${p.zap?' · '+p.zap:''}${p.apelido?' · "'+p.apelido+'"':''}${p.profissao?'<br>'+p.profissao:''}${p.email?'<br>'+p.email:''}${p.endereco?'<br>'+p.endereco:''}${p.aniversario?'<br>🎂 '+p.aniversario:''}${munsTxt}${p.obs?'<br>'+p.obs:''}${!p.completo&&p.zap?'<br><span style="color:#FFC53D">⏳ aguardando completar dados pelo WhatsApp</span>':''}</div>
+      ${p.grau!=='Apoiador'?(()=>{const r=realizadoDe(p.id),m=+p.meta||0,pc=pct(r,m);
+        return `<div class="placar"><div class="pl"><span>Meta</span><b>${fmt(m)}</b></div>
+        <div class="pl"><span>Realizado</span><b style="color:${pc===null?'var(--ink)':pc>=100?'#57D9A3':pc>=50?'#FFC53D':'#FF8A8A'}">${fmt(r)}</b></div>
+        ${pc!==null?`<div class="pl"><span>%</span><b style="color:${pc>=100?'#57D9A3':pc>=50?'#FFC53D':'#FF8A8A'}">${pc}%</b></div>`:''}</div>
+        ${m>0?`<div class="bar"><i style="width:${Math.min(pc,100)}%;background:${pc>=100?'#57D9A3':pc>=50?'#FFC53D':'#FF8A8A'}"></i></div>`:''}`;})():''}
+      <div class="meta"><b>${fmt(+p.votos||0)}</b> voto(s) próprio(s)${p.zap?' · '+p.zap:''}${p.apelido?' · "'+p.apelido+'"':''}${p.profissao?'<br>'+p.profissao:''}${p.email?'<br>'+p.email:''}${p.endereco?'<br>'+p.endereco:''}${p.aniversario?'<br>🎂 '+p.aniversario:''}${munsTxt}${p.obs?'<br>'+p.obs:''}${!p.completo&&p.zap?'<br><span style="color:#FFC53D">⏳ aguardando completar dados pelo WhatsApp</span>':''}</div>
       ${d?`<span class="dobtag" style="background:${d.cor}"><b>${d.ini}</b> ${d.nome}</span>`:''}
       <div class="acts">
         ${p.grau==='Coordenador'?`<button onclick="verCoord('${p.id}')">ver territórios</button>`:''}
@@ -588,11 +670,14 @@ function openForm(){
 function closeForm(){
   form.classList.remove('open'); editId=null; extraMuns=[];
   formTitle.textContent='Novo cadastro';
-  fNome.value=fVotos.value=fZap.value=fObs.value=fApelido.value=fProf.value=fEmail.value=fNasc.value=fEnd.value='';
+  fNome.value=fVotos.value=fMeta.value=fZap.value=fObs.value=fApelido.value=fProf.value=fEmail.value=fNasc.value=fEnd.value='';
   fGrau.value='Apoiador'; fDob.value='';
   renderChips(); syncCoordBox();
 }
-function syncCoordBox(){ coordbox.classList.toggle('on',fGrau.value==='Coordenador'); }
+function syncCoordBox(){
+  coordbox.classList.toggle('on',fGrau.value==='Coordenador');
+  metaRow.style.display=(fGrau.value==='Apoiador')?'none':'flex';
+}
 fGrau.onchange=syncCoordBox;
 function renderChips(){
   chips.innerHTML=extraMuns.map(id=>`<span class="chip">${munById[id]}<button data-rm="${id}">✕</button></span>`).join('');
@@ -620,7 +705,7 @@ cancelBtn.onclick=closeForm;
 saveBtn.onclick=async()=>{
   const nome=fNome.value.trim();
   if(!nome){toast('Informe o nome');return;}
-  const payload={nome,grau:fGrau.value,votos:+fVotos.value||0,zap:fZap.value.trim(),
+  const payload={nome,grau:fGrau.value,votos:+fVotos.value||0,meta:+fMeta.value||0,zap:fZap.value.trim(),
     apelido:fApelido.value.trim(),profissao:fProf.value.trim(),email:fEmail.value.trim(),
     aniversario:fNasc.value.trim(),endereco:fEnd.value.trim(),
     dobId:fDob.value||null,obs:fObs.value.trim(),munId:selId,
@@ -643,7 +728,7 @@ window.editP=pid=>{
   const p=db.pessoas.find(x=>String(x.id)===String(pid)); if(!p)return;
   editId=p.id; fillDobSelect();
   formTitle.textContent='Editar cadastro';
-  fNome.value=p.nome; fGrau.value=p.grau; fVotos.value=p.votos||''; fZap.value=p.zap||'';
+  fNome.value=p.nome; fGrau.value=p.grau; fVotos.value=p.votos||''; fMeta.value=p.meta||''; fZap.value=p.zap||'';
   fApelido.value=p.apelido||''; fProf.value=p.profissao||''; fEmail.value=p.email||'';
   fNasc.value=p.aniversario||''; fEnd.value=p.endereco||'';
   fDob.value=p.dobId||''; fObs.value=p.obs||'';
@@ -715,54 +800,142 @@ window.delD=async id=>{
 
 /* ---------- tabs ---------- */
 function showTab(t){
-  tabMun.classList.toggle('on',t==='mun'); tabDob.classList.toggle('on',t==='dob'); tabEq.classList.toggle('on',t==='eq');
-  viewMun.classList.toggle('on',t==='mun'); viewDob.classList.toggle('on',t==='dob'); viewEq.classList.toggle('on',t==='eq');
+  tabMun.classList.toggle('on',t==='mun'); tabDob.classList.toggle('on',t==='dob');
+  viewMun.classList.toggle('on',t==='mun'); viewDob.classList.toggle('on',t==='dob');
   if(t==='dob')renderDobList();
-  if(t==='eq')renderEq();
 }
 tabMun.onclick=()=>showTab('mun');
 tabDob.onclick=()=>showTab('dob');
-tabEq.onclick=()=>{showTab('eq');load(true);};
-eqRefresh.onclick=()=>load(true);
 
-/* ---------- hierarquia ---------- */
+/* ---------- EQUIPE EM TELA CHEIA ---------- */
+let eqCoord=null;
+btnEquipe.onclick=()=>{eqCoord=null;abrirEq();};
+eqClose.onclick=()=>{eqFull.classList.remove('on');};
+function abrirEq(){ eqFull.classList.add('on'); load(true); renderEq(); }
+
+function statPill(l,v,c){return `<div class="s"><b style="${c?'color:'+c:''}">${v}</b><span>${l}</span></div>`;}
+
 function renderEq(){
-  const L=document.getElementById('eqList');
-  if(!db.pessoas.length){L.innerHTML='<div class="empty">Ninguém cadastrado ainda.</div>';eqTotais.textContent='';return;}
-  const filhos={};
-  db.pessoas.forEach(p=>{(filhos[p.paiId||'root']??=[]).push(p);});
+  if(!eqFull.classList.contains('on'))return;
   const nC=db.pessoas.filter(p=>p.grau==='Coordenador').length;
   const nE=db.pessoas.filter(p=>p.grau==='Cabo Eleitoral').length;
   const nA=db.pessoas.filter(p=>p.grau==='Apoiador').length;
+  const vt=db.pessoas.reduce((s,p)=>s+(+p.votos||0),0);
+  const mt=db.pessoas.filter(p=>!p.paiId&&p.grau!=='Apoiador').reduce((s,p)=>s+(+p.meta||0),0);
   const pend=db.pessoas.filter(p=>!p.completo&&p.zap).length;
-  eqTotais.innerHTML=`<b>${nC}</b> coord · <b>${nE}</b> cabos · <b>${nA}</b> apoiadores${pend?` · <span style="color:#FFC53D"><b>${pend}</b> aguardando dados</span>`:''}`;
-  const totalDe=p=>{
-    const f=filhos[p.id]||[];
-    return f.length+f.reduce((s,x)=>s+totalDe(x),0);
-  };
-  const node=(p,lvl)=>{
-    const f=(filhos[p.id]||[]).sort((a,b)=>RANK[b.grau]-RANK[a.grau]);
-    const diretos=f.length, total=totalDe(p);
-    const temLink=p.grau!=='Apoiador';
-    return `<div class="tnode lvl${lvl}">
-      <div class="tcard">
-        <div class="trow">
-          ${p.grau==='Coordenador'&&p.num?'<span class="numtag">'+p.num+'</span>':''}
-          <span class="nm">${p.nome}</span>
-          <span class="badge b-${p.grau.replace(' ','')}">${p.grau}</span>
-        </div>
-        <div class="cnt">${munById[p.munId]||''}${p.zap?' · '+p.zap:''}${temLink?` · cadastrou <b>${diretos}</b> direto(s)${total!==diretos?' · <b>'+total+'</b> no total':''}`:''}</div>
-        <div class="tacts">
-          ${temLink?`<button onclick="copyLink('${p.id}')">copiar link de cadastro</button>`:''}
-          <button onclick="irPara('${p.munId}')">ver no mapa</button>
-        </div>
-      </div>
-      ${f.map(x=>node(x,Math.min(lvl+1,2))).join('')}
-    </div>`;
-  };
-  const raizes=(filhos['root']||[]).sort((a,b)=>RANK[b.grau]-RANK[a.grau]||(a.num||99)-(b.num||99));
-  L.innerHTML=raizes.map(p=>node(p,0)).join('');
+  eqStats.innerHTML=statPill('Coordenadores',nC)+statPill('Cabos',nE)+statPill('Apoiadores',nA)
+    +statPill('Meta',fmt(mt))+statPill('Realizado',fmt(vt),vt>=mt&&mt>0?'#57D9A3':'')
+    +(pend?statPill('Sem dados',pend,'#FFC53D'):'');
+  eqCoord ? renderDetalhe() : renderGrade();
 }
+
+function renderGrade(){
+  eqTitulo.textContent='Equipe';
+  const coords=db.pessoas.filter(p=>p.grau==='Coordenador').sort((a,b)=>(a.num||99)-(b.num||99));
+  const soltos=db.pessoas.filter(p=>p.grau!=='Coordenador'&&!p.paiId);
+  if(!coords.length&&!soltos.length){eqBody.innerHTML='<div class="vazio">Nenhum coordenador cadastrado ainda. Cadastre pelo mapa.</div>';return;}
+  let h='<div class="coordGrid">'+coords.map(p=>{
+    const r=realizadoDe(p.id), m=+p.meta||0, pc=pct(r,m);
+    const cor=pc===null?'var(--ink)':pc>=100?'#57D9A3':pc>=50?'#FFC53D':'#FF8A8A';
+    const rede=db.pessoas.filter(x=>x.paiId===p.id);
+    const cabos=rede.filter(x=>x.grau==='Cabo Eleitoral').length;
+    const total=contaRede(p.id);
+    return `<div class="coordCard" onclick="verEq('${p.id}')">
+      <div class="ch">${p.num?'<span class="numtag">'+p.num+'</span>':''}<span class="cnome">${p.nome}</span></div>
+      <div class="cmun">${munById[p.munId]||''}${(p.muns&&p.muns.length)?' + '+p.muns.length+' município(s)':''}</div>
+      <div class="cnums">
+        <div class="cn"><span>Meta</span><b>${fmt(m)}</b></div>
+        <div class="cn"><span>Realizado</span><b style="color:${cor}">${fmt(r)}</b></div>
+        ${pc!==null?`<div class="cn"><span>%</span><b style="color:${cor}">${pc}%</b></div>`:''}
+        <div class="cn"><span>Rede</span><b>${total}</b></div>
+      </div>
+      ${m>0?`<div class="bar"><i style="width:${Math.min(pc,100)}%;background:${cor}"></i></div>`:''}
+      <div class="abrir">${cabos} cabo(s) · ver estrutura →</div>
+    </div>`;}).join('')+'</div>';
+  if(soltos.length){
+    h+='<div class="grupo" style="margin-top:22px"><div class="gt">Sem coordenador (<b>'+soltos.length+'</b>)</div>'
+      +'<div class="caboBlock">'+tabela(soltos)+'</div></div>';
+  }
+  eqBody.innerHTML=h;
+}
+function contaRede(pid){
+  const f=db.pessoas.filter(x=>x.paiId===pid);
+  return f.length+f.reduce((s,x)=>s+contaRede(x.id),0);
+}
+function tabela(arr){
+  if(!arr.length)return '<div class="vazio">Ninguém cadastrado.</div>';
+  return `<table class="tabela"><thead><tr>
+    <th>Nome</th><th>Município</th><th>WhatsApp</th><th>Profissão</th><th style="text-align:right">Votos</th></tr></thead><tbody>`
+    +arr.sort((a,b)=>(+b.votos||0)-(+a.votos||0)).map(p=>`<tr>
+      <td>${p.nome}${p.apelido?' <span style="color:var(--muted)">("'+p.apelido+'")</span>':''}${!p.completo&&p.zap?'<br><span class="pend">⏳ aguardando dados</span>':''}</td>
+      <td>${munById[p.munId]||''}</td>
+      <td>${p.zap||'—'}</td>
+      <td>${p.profissao||'—'}</td>
+      <td class="vt">${fmt(+p.votos||0)}</td></tr>`).join('')+'</tbody></table>';
+}
+
+function renderDetalhe(){
+  const p=db.pessoas.find(x=>String(x.id)===String(eqCoord));
+  if(!p){eqCoord=null;renderGrade();return;}
+  eqTitulo.textContent=p.nome;
+  const r=realizadoDe(p.id), m=+p.meta||0, pc=pct(r,m);
+  const cor=pc===null?'var(--ink)':pc>=100?'#57D9A3':pc>=50?'#FFC53D':'#FF8A8A';
+  const filhos=db.pessoas.filter(x=>x.paiId===p.id);
+  const cabos=filhos.filter(x=>x.grau==='Cabo Eleitoral');
+  const diretos=filhos.filter(x=>x.grau==='Apoiador');
+  const muns=[p.munId,...(p.muns||[])];
+
+  let h=`<button class="eqBack" onclick="eqCoord=null;renderEq()">← Todos os coordenadores</button>
+  <div class="detHead">
+    <div>
+      <div class="dnome">${p.num?'<span class="numtag">'+p.num+'</span> ':''}${p.nome}</div>
+      <div class="dsub">${p.grau} · ${muns.map(x=>munById[x]).join(', ')}${p.zap?' · '+p.zap:''}</div>
+      <div class="placar" style="margin-top:9px">
+        <div class="pl"><span>Meta</span><b>${fmt(m)}</b></div>
+        <div class="pl"><span>Realizado</span><b style="color:${cor}">${fmt(r)}</b></div>
+        ${pc!==null?`<div class="pl"><span>%</span><b style="color:${cor}">${pc}%</b></div>`:''}
+        <div class="pl"><span>Rede</span><b>${contaRede(p.id)}</b></div>
+      </div>
+      ${m>0?`<div class="bar" style="max-width:340px"><i style="width:${Math.min(pc,100)}%;background:${cor}"></i></div>`:''}
+    </div>
+    <div class="dacts">
+      <button class="verde" onclick="verNoMapa('${p.id}')">📍 Ver municípios no mapa</button>
+      ${p.codigo?`<button onclick="copyLink('${p.id}')">🔗 Link de cadastro</button>`:''}
+    </div>
+  </div>`;
+
+  h+=`<div class="grupo"><div class="gt">Apoiadores diretos (<b>${diretos.length}</b>)</div>
+    <div class="caboBlock">${tabela(diretos)}</div></div>`;
+
+  h+=`<div class="grupo"><div class="gt">Cabos eleitorais (<b>${cabos.length}</b>)</div>`;
+  if(!cabos.length) h+='<div class="caboBlock"><div class="vazio">Nenhum cabo eleitoral cadastrado.</div></div>';
+  cabos.forEach(c=>{
+    const ap=db.pessoas.filter(x=>x.paiId===c.id);
+    const rc=realizadoDe(c.id), mc=+c.meta||0, pcc=pct(rc,mc);
+    const cc=pcc===null?'var(--ink)':pcc>=100?'#57D9A3':pcc>=50?'#FFC53D':'#FF8A8A';
+    h+=`<div class="caboBlock">
+      <div class="cbh">
+        <span class="cbn">${c.nome}</span>
+        <span class="badge b-CaboEleitoral">Cabo</span>
+        <span style="font-size:12px;color:var(--muted)">${munById[c.munId]||''}${c.zap?' · '+c.zap:''}</span>
+        <span class="cbnums">
+          <span>Meta <b>${fmt(mc)}</b></span>
+          <span>Realizado <b style="color:${cc}">${fmt(rc)}</b></span>
+          <span>Apoiadores <b>${ap.length}</b></span>
+          ${c.codigo?`<button onclick="copyLink('${c.id}')" style="background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:11.5px;padding:0">link</button>`:''}
+        </span>
+      </div>
+      ${tabela(ap)}
+    </div>`;
+  });
+  h+='</div>';
+  eqBody.innerHTML=h;
+}
+window.verEq=pid=>{eqCoord=pid;renderEq();};
+window.verNoMapa=pid=>{
+  eqFull.classList.remove('on');
+  verCoord(pid);
+};
 window.copyLink=pid=>{
   const p=db.pessoas.find(x=>String(x.id)===String(pid));
   if(!p||!p.codigo){toast('Salve a pessoa primeiro para gerar o link');return;}
@@ -804,11 +977,12 @@ document.addEventListener('click',e=>{ if(!sug.contains(e.target)&&e.target!==q)
 /* ---------- CSV ---------- */
 csvBtn.onclick=()=>{
   if(!db.pessoas.length){toast('Nada cadastrado ainda');return;}
-  let rows=[['Municipio','Nome','Apelido','Grau','Num Coordenador','Potencial de Votos','WhatsApp','Email','Profissao','Endereco','Aniversario','Dobrada','Iniciais','Municipios que cuida','Cadastrado por','Dados completos','Observacoes']];
+  let rows=[['Municipio','Nome','Apelido','Grau','Num Coordenador','Meta de Votos','Realizado (rede)','Votos proprios','WhatsApp','Email','Profissao','Endereco','Aniversario','Dobrada','Iniciais','Municipios que cuida','Cadastrado por','Dados completos','Observacoes']];
   db.pessoas.forEach(p=>{
     const d=p.dobId?dobOf(p.dobId):null;
     const pai=p.paiId?db.pessoas.find(x=>x.id===p.paiId):null;
-    rows.push([munById[p.munId],p.nome,p.apelido||'',p.grau,p.num||'',p.votos||0,p.zap||'',p.email||'',p.profissao||'',p.endereco||'',p.aniversario||'',d?d.nome:'',d?d.ini:'',(p.muns||[]).map(m=>munById[m]).join(' | '),pai?pai.nome:'',p.completo?'sim':'nao',p.obs||'']);
+    const real=p.grau!=='Apoiador'?realizadoDe(p.id):'';
+    rows.push([munById[p.munId],p.nome,p.apelido||'',p.grau,p.num||'',p.meta||0,real,p.votos||0,p.zap||'',p.email||'',p.profissao||'',p.endereco||'',p.aniversario||'',d?d.nome:'',d?d.ini:'',(p.muns||[]).map(m=>munById[m]).join(' | '),pai?pai.nome:'',p.completo?'sim':'nao',p.obs||'']);
   });
   const csv='\uFEFF'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n');
   const a=document.createElement('a');
