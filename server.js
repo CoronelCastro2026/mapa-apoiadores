@@ -34,6 +34,7 @@ db.exec(`
     votos INTEGER DEFAULT 0,
     zap TEXT, endereco TEXT, email TEXT,
     apelido TEXT, profissao TEXT, aniversario TEXT,
+    meta INTEGER DEFAULT 0,       -- meta de votos prometida (coordenador/cabo)
     completo INTEGER DEFAULT 0,   -- 1 = já completou os dados pelo WhatsApp
     dob_id TEXT, obs TEXT,
     mun_id TEXT NOT NULL,          -- código IBGE
@@ -45,7 +46,7 @@ db.exec(`
   );
 `);
 // migração: adiciona colunas novas em bancos antigos
-for (const col of ['apelido TEXT', 'profissao TEXT', 'aniversario TEXT', 'completo INTEGER DEFAULT 0']) {
+for (const col of ['apelido TEXT', 'profissao TEXT', 'aniversario TEXT', 'meta INTEGER DEFAULT 0', 'completo INTEGER DEFAULT 0']) {
   try { db.exec('ALTER TABLE pessoas ADD COLUMN ' + col); } catch (e) { /* já existe */ }
 }
 
@@ -60,7 +61,7 @@ function pessoaOut(p) {
     id: p.id, nome: p.nome, grau: p.grau, num: p.num || undefined,
     votos: p.votos || 0, zap: p.zap || '', endereco: p.endereco || '', email: p.email || '',
     apelido: p.apelido || '', profissao: p.profissao || '', aniversario: p.aniversario || '',
-    completo: !!p.completo,
+    meta: p.meta || 0, completo: !!p.completo,
     dobId: p.dob_id || null, obs: p.obs || '', munId: p.mun_id,
     paiId: p.pai_id || null, codigo: p.codigo || null,
     muns: db.prepare('SELECT mun_id FROM pessoa_muns WHERE pessoa_id=?').all(p.id).map(r => r.mun_id)
@@ -70,10 +71,10 @@ function inserirPessoa(x) {
   const id = x.id || rid('p');
   const precisaCodigo = (x.grau === 'Coordenador' || x.grau === 'Cabo Eleitoral');
   const num = x.grau === 'Coordenador' ? (x.num || proxNum()) : null;
-  db.prepare(`INSERT INTO pessoas(id,nome,grau,num,votos,zap,endereco,email,apelido,profissao,aniversario,completo,dob_id,obs,mun_id,pai_id,codigo)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+  db.prepare(`INSERT INTO pessoas(id,nome,grau,num,votos,zap,endereco,email,apelido,profissao,aniversario,meta,completo,dob_id,obs,mun_id,pai_id,codigo)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
     .run(id, x.nome, x.grau, num, +x.votos || 0, x.zap || '', x.endereco || '', x.email || '',
-         x.apelido || '', x.profissao || '', x.aniversario || '', x.completo ? 1 : 0,
+         x.apelido || '', x.profissao || '', x.aniversario || '', +x.meta || 0, x.completo ? 1 : 0,
          x.dobId || null, x.obs || '', String(x.munId), x.paiId || null,
          x.codigo || (precisaCodigo ? novoCodigo() : null));
   const setM = db.prepare('INSERT OR IGNORE INTO pessoa_muns(pessoa_id,mun_id) VALUES (?,?)');
@@ -167,10 +168,11 @@ app.put('/api/pessoas/:id', auth, (req, res) => {
   if (grau !== 'Coordenador') num = null;
   let codigo = atual.codigo;
   if ((grau === 'Coordenador' || grau === 'Cabo Eleitoral') && !codigo) codigo = novoCodigo();
-  db.prepare(`UPDATE pessoas SET nome=?, grau=?, num=?, votos=?, zap=?, endereco=?, email=?,
-              dob_id=?, obs=?, codigo=? WHERE id=?`)
-    .run(x.nome ?? atual.nome, grau, num, +x.votos || 0, x.zap ?? atual.zap,
+  db.prepare(`UPDATE pessoas SET nome=?, grau=?, num=?, votos=?, meta=?, zap=?, endereco=?, email=?,
+              apelido=?, profissao=?, aniversario=?, dob_id=?, obs=?, codigo=? WHERE id=?`)
+    .run(x.nome ?? atual.nome, grau, num, +x.votos || 0, +x.meta || 0, x.zap ?? atual.zap,
          x.endereco ?? atual.endereco, x.email ?? atual.email,
+         x.apelido ?? atual.apelido, x.profissao ?? atual.profissao, x.aniversario ?? atual.aniversario,
          x.dobId !== undefined ? x.dobId : atual.dob_id, x.obs ?? atual.obs, codigo, atual.id);
   db.prepare('DELETE FROM pessoa_muns WHERE pessoa_id=?').run(atual.id);
   const setM = db.prepare('INSERT OR IGNORE INTO pessoa_muns(pessoa_id,mun_id) VALUES (?,?)');
@@ -295,7 +297,7 @@ app.get('/api/whats/indicador', n8nAuth, (req, res) => {
 app.post('/api/whats/cadastro', n8nAuth, (req, res) => {
   const b = req.body || {};
   const zapIndicador = b.zapIndicador || req.query.zapIndicador;
-  const { nome, zap, municipio, grau } = b;
+  const { nome, zap, municipio, grau, votos } = b;
   const pai = acharPorZap(zapIndicador);
   if (!pai) return res.status(404).json({ erro: 'indicador_nao_encontrado',
     msg: 'Este número de WhatsApp não pertence a um coordenador ou cabo eleitoral cadastrado.' });
@@ -313,7 +315,7 @@ app.post('/api/whats/cadastro', n8nAuth, (req, res) => {
   if (pai.grau === 'Cabo Eleitoral') g = 'Apoiador';
   const p = inserirPessoa({
     nome: String(nome).trim().slice(0, 120), grau: g, zap: String(zap).trim().slice(0, 30),
-    munId: mun.id, paiId: pai.id, dobId: pai.dob_id || null
+    votos: +votos || 0, munId: mun.id, paiId: pai.id, dobId: pai.dob_id || null
   });
   backup();
   avisarN8n(p, { id: pai.id, nome: pai.nome, grau: pai.grau });
@@ -342,11 +344,12 @@ app.patch('/api/pessoas/:id', (req, res) => {
   if (!p) return res.status(404).json({ erro: 'não encontrado' });
   const x = req.body || {};
   db.prepare(`UPDATE pessoas SET nome=?, zap=?, endereco=?, email=?, apelido=?, profissao=?,
-              aniversario=?, completo=?, votos=?, obs=? WHERE id=?`)
+              aniversario=?, completo=?, votos=?, meta=?, obs=? WHERE id=?`)
     .run(x.nome ?? p.nome, x.zap ?? p.zap, x.endereco ?? p.endereco, x.email ?? p.email,
          x.apelido ?? p.apelido, x.profissao ?? p.profissao, x.aniversario ?? p.aniversario,
          x.completo !== undefined ? (x.completo ? 1 : 0) : p.completo,
-         x.votos !== undefined ? +x.votos || 0 : p.votos, x.obs ?? p.obs, p.id);
+         x.votos !== undefined ? +x.votos || 0 : p.votos,
+         x.meta !== undefined ? +x.meta || 0 : p.meta, x.obs ?? p.obs, p.id);
   backup();
   res.json(pessoaOut(db.prepare('SELECT * FROM pessoas WHERE id=?').get(p.id)));
 });
